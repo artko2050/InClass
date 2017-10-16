@@ -1,0 +1,317 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-scroll-target-behavior/iron-scroll-target-behavior.html">
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
+<link rel="import" href="my-login.html">
+
+
+<dom-module id="my-welcome">
+  <template>
+    <style>
+      :host {
+        display: block;
+        background-color: #f1684e;
+      }
+      header {
+        @apply --layout-vertical;
+        @apply --layout-center-center;
+        padding-top: 128px;
+        height: 75vh;
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgba(0,0,0,0);
+        color: white;
+        text-align: center;
+      }
+      header > div {
+        height: 30px;
+      }
+      header > .main {
+        font-size: 56px;
+        font-weight: 100;
+        margin: 0;
+      }
+      header > .description {
+        font-size: 32px;
+        font-weight: 100;
+      }
+      section {
+        padding: 32px 16px;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: 30% 70%;
+        grid-gap: 20px;
+        max-width: 800px;
+        margin: auto;
+      }
+      .container > * {
+        @apply --layout-flex;
+        vertical-align: top;
+      }
+      h3 {
+        font-size: 32px;
+        font-weight: 300;
+        margin: 24px 0;
+      }
+      p {
+        line-height: 2;
+        font-weight: 300;
+        font-size: 20px;
+      }
+      .title {
+        font-size: 38px;
+        font-weight: 300;
+      }
+      .content {
+        background-color: #fafafa;
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 80px;
+      }
+      .signin {
+        border: solid 1px;
+        background: rgba(0,0,0,0);
+      }
+      .signin:hover {
+        background: #fff;
+        color: #f1684e;
+      }
+      .icon {
+        margin-top: 38px;
+        width: 200px;
+        height: 200px;
+        border-radius: 100px;
+        background-color: #fafafa;
+        border: solid 2px #000;
+        line-height: 200px;
+        font-size: 100px;
+        font-weight: 100;
+        text-align: center;
+      }
+      .diary-icon {
+        margin-top: 38px;
+        margin-left: 15px;
+        width: 170px;
+        height: 200px;
+        border-radius: 10px;
+        background-color: #fafafa;
+        border: solid 2px #000;
+      }
+      .line1 {
+        margin-top: 50px;
+        width: 100px;
+        margin-left: 35px;
+        margin-right: 35px;
+        border: solid 1px #000;
+      }
+      .line2 {
+        margin-top: 20px;
+        width: 100px;
+        margin-left: 35px;
+        margin-right: 35px;
+        border: solid 1px #000;
+      }
+      footer {
+        height: 128px;
+        padding-top: 56px;
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        line-height: 0.4;
+        color: #fff;
+      }
+      .ender {
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        padding-top: 32px;
+        padding-bottom: 64px;
+      }
+      .arrow {
+        height: 32px;
+        width: 32px;
+        margin-top: 30px;
+      }
+      .bounce {
+        -moz-animation: bounce 2s infinite;
+        -webkit-animation: bounce 2s infinite;
+        animation: bounce 2s infinite;
+      }
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-20px);
+        }
+        60% {
+          transform: translateY(-10px);
+        }
+      }
+      a {
+        text-decoration: none;
+        color: #fff;
+      }
+
+      @media (max-width: 530px) {
+        .main {
+          font-size: 24px;
+        }
+        .description {
+          font-size: 15px;
+        }
+        .icon {
+          height: 120px;
+          width: 120px;
+          line-height: 120px;
+          font-size: 60px;
+          border-radius: 60px;
+        }
+        .diary-icon {
+          margin-left: 9px;
+          width: 102px;
+          height: 120px;
+          border-radius: 6px;
+        }
+        .line1 {
+          margin-top: 30px;
+          width: 60px;
+          margin-left: 21px;
+          margin-right: 21px;
+        }
+        .line2 {
+          margin-top: 12px;
+          width: 60px;
+          margin-left: 21px;
+          margin-right: 21px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          display: grid;
+          grid-template-columns: 100%;
+          grid-gap: 20px;
+          text-align: center;
+        }
+        .container > * {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        header > .main {
+          font-size: 34px;
+        }
+        header > .description {
+          font-size: 21px;
+        }
+      }
+    </style>
+
+    <app-location id="applocation" route="{{route}}"></app-location>
+
+
+    <app-header-layout>
+
+      <header>
+          <p class="main">Встречайте InClass</p>
+          <p class="description">Принципиально новый сервис, выходящий за рамки обычного школьного сайта.</p>
+          <paper-button noink class="signin" on-click="loginbut">Начать</paper-button>
+          <img src="../images/manifest/chevron-arrow-down.png" class="arrow bounce"></img>
+      </header>
+
+      <div class="content">
+        <section id="about">
+          <div class="container">
+            <div>
+              <div class="icon">i</div>
+            </div>
+            <div>
+              <h3>О сервисе</h3>
+              <p>InClass - сервис, который создан, чтобы облегчить жизнь обычным школьникам.<br><br>
+                  Ознакомиться с возможностями сервиса вы можете ниже</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact">
+          <div class="container">
+            <div>
+              <div class="icon">?!</div>
+            </div>
+            <div>
+              <h3>Общение</h3>
+              <p>Теперь у каждого класса есть своя группа, где одноклассники могут делиться домашним заданием, помогать друг другу или обсуждать классные вопросы</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="diary">
+          <div class="container">
+            <div>
+              <div class="diary-icon">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line2"></div>
+                <div class="line2"></div>
+              </div>
+            </div>
+            <div>
+              <h3>Дневник</h3>
+              <p>Твой дневник никогда не был настолько умным.<br>Просто спроси домашнее задание в классной группе и оно автоматически появится в твоем новом дневнике</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="ender">
+          <paper-button noink class="signin" on-click="loginbut">Начать</paper-button>
+        </div>
+
+      </div>
+
+      <footer>
+        <h3>DroidCat InClass</h3>
+        <p>2017</p>
+      </footer>
+    </app-header-layout>
+    <my-login id="login" user="{{user}}"></my-login>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-welcome',
+      properties: {
+        user: {
+          type: Object,
+          observer: '_authChanged'
+        },
+        signedIn: {
+          type: Boolean,
+          value: false,
+          observer: '_signed'
+        }
+      },
+
+      _signed: function() {
+        if(this.signedIn == true) {
+          this.$.applocation.path = "news";
+        }
+      },
+
+      _authChanged: function(user) {
+        this.signedIn = !!user;
+        console.log('SignedIn value ' + this.signedIn);
+      },
+
+      loginbut: function() {
+        this.$.login.style.display = "block";
+      }
+    });
+  </script>
+</dom-module>

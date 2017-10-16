@@ -1,0 +1,130 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="my-login.html">
+<link rel="import" href="my-readmore.html">
+
+<dom-module id="my-news">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      .button {
+        color: #000;
+        background: rgba(0,0,0,0);
+      }
+      .newsview {
+        display: grid;
+        grid-template-columns: calc(100% / 3) calc(100% / 3) calc(100% / 3);
+        padding: 4px;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      paper-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        --paper-fab-background: #f1684e;
+        --paper-fab-keyboard-focus-background: #f1684e;
+      }
+      #input {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 5px;
+      }
+      @media (max-width: 930px) {
+        .newsview {
+          grid-template-columns: 50% 50%;
+        }
+      }
+      @media (max-width: 650px) {
+        .newsview {
+          grid-template-columns: auto;
+        }
+      }
+    </style>
+
+
+    <firebase-query
+      app-name="InClass"
+      id="query"
+      path="/news"
+      data="{{news}}">
+    </firebase-query>
+
+    <firebase-document
+      id="document"
+      app-name="InClass"
+      path="/news/[[viewableId]]"
+      data="{{viewableNews}}">
+    </firebase-document>
+
+    <app-location id="applocation" route="{{route}}"></app-location>
+
+    <my-menu>
+      <div class="newsview">
+        <template is="dom-repeat" items="[[news]]" as="newsdata" sort="_sort">
+          <div class="card">
+            <h1>[[newsdata.title]]</h1>
+            <p>[[newsdata.time]]</p>
+            <paper-button id$="[[newsdata.$key]]" class="button" on-click="readMore">Читать</paper-button>
+          </div>
+        </template>
+      </div>
+      <paper-fab class="addbutton" icon="add" on-click="addnews"></paper-fab>
+    </my-menu>
+
+    <my-readmore id="readmore" title="[[viewableNews.title]]" body="[[viewableNews.body]]"></my-readmore>
+
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-news',
+
+      properties: {
+        news: {
+          type: Object
+        },
+        viewableId: {
+          type: String
+        },
+        viewableNews: {
+          type: Object
+        }
+      },
+
+      _sort: function(a, b) {
+        var a_timestamp = a.ms;
+        var b_timestamp = b.ms;
+        return a_timestamp < b_timestamp ? 1 : -1;
+      },
+
+      toViewableId: function(newsId) {
+        return newsId;
+      },
+
+      readMore: function() {
+        var newsElement = Polymer.dom(event).localTarget;
+        this.viewableId = this.toViewableId(newsElement.id);
+        console.log(this.viewableId);
+        this.$.readmore.style.display = "block";
+      },
+
+      addnews: function() {
+        this.$.applocation.path = "news-editor";
+      }
+    });
+  </script>
+</dom-module>

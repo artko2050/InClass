@@ -1,0 +1,131 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-app-script.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth-script.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-database-script.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+
+<link rel="import" href="my-menu.html">
+
+
+<link rel="import" href="my-icons.html">
+
+<dom-module id="my-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #f1684e;
+        --app-secondary-color: black;
+
+        display: block;
+      }
+
+      iron-pages {
+        height: 100%;
+      }
+    </style>
+
+    <firebase-app
+      name="InClass"
+      auth-domain="school-16-zhg.firebaseapp.com"
+      database-url="https://school-16-zhg.firebaseio.com"
+      api-key="AIzaSyB4vt-5_dGM9clHR5KgQ-oFrq9mjLMlSgU">
+    </firebase-app>
+
+    <app-location id="applocation" route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{subroute}}">
+    </app-route>
+
+    <iron-pages
+        selected="[[page]]"
+        attr-for-selected="name"
+        fallback-selection="view404"
+        role="main">
+      <my-welcome name="welcome"></my-welcome>
+      <my-forum name="forum"></my-forum>
+      <my-news name="news"></my-news>
+      <my-news-editor name="news-editor"></my-news-editor>
+      <my-view404 name="view404"></my-view404>
+    </iron-pages>
+
+    <my-login user="{{user}}"></my-login>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-app',
+
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged',
+        },
+        user: {
+          type: Object,
+          observer: '_authChanged'
+        },
+        signedIn: {
+          type: Boolean,
+          observer: "_signed"
+        }
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)',
+      ],
+
+      _signed: function() {
+        if(this.signedIn == false) {
+          this.$.applocation.path = "welcome";
+        }
+      },
+
+      _authChanged: function(user) {
+        this.signedIn = !!user;
+        console.log('SignedIn value ' + this.signedIn);
+      },
+
+      _routePageChanged: function(page) {
+        this.page = page || 'welcome';
+        if(this.page == "welcome") {
+          if(this.signedIn == true) {
+            this.$.applocation.path = "news";
+          }
+        }
+      },
+
+      _pageChanged: function(page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        if(this.page == "welcome") {
+          if(this.signedIn == true) {
+            this.$.applocation.path = "news";
+          }
+        }
+      },
+
+      _showPage404: function() {
+        this.page = 'view404';
+      },
+    });
+  </script>
+</dom-module>

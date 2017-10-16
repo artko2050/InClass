@@ -1,0 +1,173 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<dom-module id="my-login">
+  <template>
+    <style>
+      :host {
+        position: fixed;
+        z-index: 5;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+      paper-button {
+        color: #000;
+      }
+      #modal {
+        position: fixed;
+        z-index: 6;
+        background-color: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+      }
+      .card {
+        position: relative;
+        z-index: 7;
+        max-width: 800px;
+        max-height: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        background-color: #fafafa;
+        color: #212121;
+        text-align: center;
+        padding-top: 32px;
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-bottom: 16px;
+      }
+      paper-input {
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+    </style>
+
+    <firebase-auth
+      app-name="InClass"
+      id="auth"
+      user="{{user}}"
+      provider="google">
+    </firebase-auth>
+
+    <app-location id="applocation" route="{{route}}"></app-location>
+
+    <div id="modal" on-click="skip"></div>
+    <div class="card">
+
+      <template is="dom-if" if="[[!user]]">
+        <h2>Вход и регистрация</h2>
+
+        <paper-input value="{{email}}" label="Email" type="email"></paper-input>
+        <paper-input value="{{password}}" label="Пароль" type="password"></paper-input>
+
+        <paper-button on-click="signInWithEmail">
+          <span>Начать</span>
+        </paper-button>
+
+        <p>или</p>
+
+        <paper-button on-click="login">
+          <span>Войти с помощью Google</span>
+        </paper-button>
+      </template>
+
+      <template is="dom-if" if="[[user]]">
+        <h2>Вы успешно вошли</h2>
+        <paper-button on-click="logout">
+          <span>Выйти</span>
+        </paper-button>
+      </template>
+    </div>
+    <paper-toast id="toaster"></paper-toast>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-login',
+
+      properties: {
+        user: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      signInWithEmail: function() {
+        this.$.auth.signInWithEmailAndPassword(this.email, this.password).then((response) => {
+          this.email = null;
+          this.password = null;
+          this.$.applocation.path = "news";
+          this.skip();
+        }).catch((error) => {
+
+          var errorMessage = error.message;
+          var errorCode = error.code;
+
+          if (errorCode === 'auth/wrong-password') {
+            this.$.toaster.show('Неправильный пароль');
+          }
+          if(errorCode === 'auth/user-not-found') {
+            this.createUserEmail();
+          }
+
+          console.log(errorMessage);
+          console.log(errorCode);
+        });
+      },
+
+      createUserEmail: function() {
+        this.$.auth.createUserWithEmailAndPassword(this.email, this.password);
+        this.$.auth.signInWithEmailAndPassword(this.email, this.password).catch((error) => {
+
+          var errorCode = error.code;
+          var errorMessage = error.message;
+
+          if (errorCode === 'auth/email-already-in-use') {
+            this.$.toaster.show('Этот email уже используется');
+          }
+
+          console.log(errorMessage);
+        });
+        this.email = null;
+        this.password = null;
+      },
+
+      login: function() {
+        this.$.auth.signInWithPopup().then(() => {
+          this.$.applocation.path = "news";
+          this.skip();
+        });
+      },
+
+      logout: function() {
+        this.$.auth.signOut().then(() => {
+          this.$.toaster.show('Пока-пока!')
+          this.$.applocation.path = "welcome";
+          this.skip();
+        });
+      },
+
+      skip: function(){
+        this.email = null;
+        this.password = null;
+        this.style.display = "none";
+      }
+    });
+  </script>
+</dom-module>

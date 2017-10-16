@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "school-16-zhg",
+    "staging": "school-16-zhg"
+  }
+}

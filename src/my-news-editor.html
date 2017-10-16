@@ -1,0 +1,112 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-news-editor">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      .card {
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .cardcase {
+        padding: 8px;
+      }
+
+      iron-autogrow-textarea {
+        width: 100%;
+        min-height: 64px;
+      }
+
+    </style>
+
+
+    <app-location id="applocation" route="{{route}}"></app-location>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+
+    <firebase-query
+      app-name="InClass"
+      id="query"
+      path="/news"
+      data="{{news}}">
+    </firebase-query>
+
+    <my-menu>
+      <div class="cardcase">
+        <div class="card">
+          <h3>Создание новой статьи</h3>
+          <paper-input label="Заголовок" value="{{title}}"></paper-input>
+          <iron-autogrow-textarea placeholder="Текст статьи" value="{{body}}"></iron-autogrow-textarea>
+          <p>Внимание! Тексты статей будут проверены, за некорректное содержание будет произведено удаление статьи. Злостные нарушители будут удалены</p>
+          <paper-button on-click="back">Выйти</paper-button>
+          <paper-button on-click="save">Опубликовать</paper-button>
+        </div>
+      </div>
+    </my-menu>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-news-editor',
+
+      properties: {
+        news: {
+          type: Object
+        },
+        title: {
+          type: String
+        },
+        body: {
+          type: String
+        }
+      },
+
+      get newsPath() {
+          return `/news`;
+        },
+
+      save: function() {
+        if(this.title != null && this.body != null){
+          var d = new Date();
+          var ms = d.getTime();
+          var year = d.getFullYear();
+          var month = d.getMonth() + 1;
+          var date = d.getDate();
+          var hours = d.getHours();
+          var minutes = d.getMinutes();
+          if(date < 10) {
+            date = '0' + date;
+          }
+          if(month < 10) {
+            month = '0' + month;
+          }
+          var time = hours + ':' + minutes + ' ' + date + '.' + month + '.' + year;
+          this.$.query.ref.push({
+            title: this.title,
+            body: this.body,
+            time: time,
+            ms: ms
+          });
+          this.title = null;
+          this.body = null;
+          this.$.applocation.path = "news";
+        }
+      },
+
+
+      back: function() {
+        this.$.applocation.path = "news";
+      }
+    });
+  </script>
+</dom-module>

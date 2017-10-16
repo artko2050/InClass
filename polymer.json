@@ -1,0 +1,21 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/my-app.html",
+  "fragments": [
+    "src/my-welcome.html",
+    "src/my-login.html",
+    "src/my-forum.html",
+    "src/my-news.html",
+    "src/my-news-editor.html",
+    "src/my-view404.html"
+  ],
+  "sources": [
+    "src/*",
+    "images/**/*",
+    "bower.json"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}
